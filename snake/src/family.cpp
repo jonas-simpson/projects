@@ -16,6 +16,17 @@ family::family() : borderSymbol('#')
     {
         FAMILY[column] = new char[WIDTH];
     }
+
+    for (int i = 0; i < HEIGHT; ++i)
+    {
+        draw(i, 0, '#');
+        draw(i, WIDTH - 1, '#');
+    }
+    for (int i = 0; i < WIDTH; ++i)
+    {
+        draw(0, i, '#');
+        draw(HEIGHT - 1, i, '#');
+    }
 }
 
 family::~family()
@@ -41,9 +52,9 @@ void family::print()
 
 void family::clear()
 {
-    for (int column = 0; column < HEIGHT; ++column)
+    for (int column = 1; column < HEIGHT - 1; ++column)
     {
-        for (int row = 0; row < WIDTH; ++row)
+        for (int row = 1; row < WIDTH - 1; ++row)
         {
             FAMILY[column][row] = ' ';
         }

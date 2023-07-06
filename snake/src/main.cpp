@@ -53,7 +53,7 @@ int main()
         myFamily.print();
 
         // Wait 1 frame
-        Sleep(1000 / 60);
+        Sleep(1000 / 30);
 
         // Clear screen
         system("cls");
