@@ -18,6 +18,14 @@ const char* fragmentShaderSource =
 "	FragColor = vec4(1.0f, 0.5f, 0.2f, 1.0f);\n"
 "}\0;";
 
+const char* fragmentShaderSourceYellow =
+"#version 330 core\n"
+"out vec4 FragColor;\n"
+"void main()\n"
+"{\n"
+"	FragColor = vec4(1.0f, 1.0f, 0.2f, 1.0f);\n"
+"}\0;";
+
 GLFWwindow* initOpenGL();
 void framebuffer_size_callback(GLFWwindow* window, int width, int height);
 void processInput(GLFWwindow* window);
@@ -57,8 +65,23 @@ int main()
 		3, 4, 2		//second triangle
 	};
 
+	float verticesTriLeft[] = {
+		-0.375f,  0.5f, 0.0f,	//top left
+		-0.75f,  -0.5f, 0.0f,	//bottom left
+		 0.0f,   -0.5f, 0.0f,	//bottom middle
+	};
+
+	float verticesTriRight[] = {
+		 0.0f,   -0.5f, 0.0f,	//bottom middle
+		 0.375f,  0.5f, 0.0f,	//top right
+		 0.75f,  -0.5f, 0.0f	//bottom right
+	};
+
 	unsigned int VBO = createBO(1, GL_ARRAY_BUFFER, verticesDoubleTri);
 	unsigned int EBO = createBO(1, GL_ELEMENT_ARRAY_BUFFER, indicesDoubleTri);
+
+	unsigned int VBOL = createBO(1, GL_ARRAY_BUFFER, verticesTriLeft);
+	unsigned int VBOR = createBO(1, GL_ARRAY_BUFFER, verticesTriRight);
 
 	unsigned int vertexShader = createShader(GL_VERTEX_SHADER, &vertexShaderSource);
 	shaderCompileSuccess(vertexShader);
@@ -66,8 +89,14 @@ int main()
 	unsigned int fragmentShader = createShader(GL_FRAGMENT_SHADER, &fragmentShaderSource);
 	shaderCompileSuccess(fragmentShader);
 
+	unsigned int fragmentShaderY = createShader(GL_FRAGMENT_SHADER, &fragmentShaderSourceYellow);
+	shaderCompileSuccess(fragmentShaderY);
+
 	unsigned int shaderProgram = createShaderProgram(vertexShader, fragmentShader);
 	shaderProgramLinkerSuccess(shaderProgram);
+
+	unsigned int shaderProgramY = createShaderProgram(vertexShader, fragmentShaderY);
+	shaderProgramLinkerSuccess(shaderProgramY);
 
 	//We now have a program object that we can activate
 	glUseProgram(shaderProgram);
@@ -88,8 +117,26 @@ int main()
 	glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, EBO);
 	glBufferData(GL_ELEMENT_ARRAY_BUFFER, sizeof(indicesDoubleTri), indicesDoubleTri, GL_STATIC_DRAW);
 	//Set the vertex attribute pointers
+
+
+	unsigned int VAOL;
+	glGenVertexArrays(1, &VAOL);
+	glBindVertexArray(VAOL);
+	glBindBuffer(GL_ARRAY_BUFFER, VBOL);
+	glBufferData(GL_ARRAY_BUFFER, sizeof(verticesTriLeft), verticesTriLeft, GL_STATIC_DRAW);
+
 	glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 3 * sizeof(float), (void*)0);
 	glEnableVertexAttribArray(0);
+
+	unsigned int VAOR;
+	glGenVertexArrays(1, &VAOR);
+	glBindVertexArray(VAOR);
+	glBindBuffer(GL_ARRAY_BUFFER, VBOR);
+	glBufferData(GL_ARRAY_BUFFER, sizeof(verticesTriRight), verticesTriRight, GL_STATIC_DRAW);
+
+	glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 3 * sizeof(float), (void*)0);
+	glEnableVertexAttribArray(0);
+
 
 	//RENDER TIME!!!
 	while (!glfwWindowShouldClose(window))
@@ -102,8 +149,16 @@ int main()
 		glClear(GL_COLOR_BUFFER_BIT);
 		//Draw the object!
 		glUseProgram(shaderProgram);
+		/*
 		glBindVertexArray(VAO);
 		glDrawElements(GL_TRIANGLES, 6, GL_UNSIGNED_INT, 0);
+		glBindVertexArray(0);
+		*/
+		glBindVertexArray(VAOL);
+		glDrawArrays(GL_TRIANGLES, 0, 3);
+		glUseProgram(shaderProgramY);
+		glBindVertexArray(VAOR);
+		glDrawArrays(GL_TRIANGLES, 0, 3);
 		glBindVertexArray(0);
 
 		//Check and call all events and swap the buffers
