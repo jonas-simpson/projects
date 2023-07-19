@@ -3,7 +3,6 @@
 
 #define BLACK	0,0,0
 #define WHITE	1,1,1
-#define GRAY	0.5,0.5,0.5
 #define RED		1,0,0
 #define GREEN	0,1,0
 #define BLUE	0,0,1
@@ -28,8 +27,23 @@ struct Vector2f
 };
 struct Color
 {
+	/// <summary>
+	/// The Red, Green, and Blue components of our color, ranging 0-1
+	/// </summary>
 	float r, g, b;
+	/// <summary>
+	/// Construct a color from 3 individual floats
+	/// </summary>
+	/// <param name="_r">Red component</param>
+	/// <param name="_g">Green component</param>
+	/// <param name="_b">Blue component</param>
 	Color(float _r, float _g, float _b) :r(_r), g(_g), b(_b) {}
+	/// <summary>
+	/// Create a Shade of our color by dividing each component equally
+	/// </summary>
+	/// <param name="i">Integer to divide our color by</param>
+	/// <returns>Shade of color</returns>
+	Color operator/(int i) { return Color(r / i, g / i, b / i); }
 };
 
 unsigned int FPS;
@@ -77,11 +91,11 @@ void display(void)
 
 	for (int x = 0; x < COLUMNS; x++)
 	{
-		drawLine(Vector2i(x, 0), Vector2i(x, ROWS), 2, Color(GRAY));
+		drawLine(Vector2i(x, 0), Vector2i(x, ROWS), 2, Color(WHITE) / 10);
 	}
 	for (int y = 0; y < ROWS; y++)
 	{
-		drawLine(Vector2i(0, y), Vector2i(COLUMNS, y), 2, Color(GRAY));
+		drawLine(Vector2i(0, y), Vector2i(COLUMNS, y), 2, Color(WHITE) / 10);
 	}
 
 	glutSwapBuffers();
