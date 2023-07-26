@@ -1,11 +1,8 @@
 #include <iostream>
 #include <GL/freeglut.h>
 
-#define BLACK	0,0,0
-#define WHITE	1,1,1
-#define RED		1,0,0
-#define GREEN	0,1,0
-#define BLUE	0,0,1
+#include "Math.h"
+#include "Colors.h"
 
 #define COLUMNS			16
 #define ROWS			16
@@ -14,40 +11,8 @@
 #define CELLWIDTH		SCREENWIDTH/COLUMNS
 #define CELLHEIGHT		SCREENHEIGHT/ROWS
 
-struct Vector2i
-{
-	int x, y;
-	Vector2i(int _x, int _y) : x(_x), y(_y) {}
-};
-struct Vector2f
-{
-	float x, y;
-	Vector2f(float _x, float _y) : x(_x), y(_y) {}
-	Vector2f(Vector2i _v) : x((float)_v.x), y((float)_v.y) {}
-};
-struct Color
-{
-	/// <summary>
-	/// The Red, Green, and Blue components of our color, ranging 0-1
-	/// </summary>
-	float r, g, b;
-	/// <summary>
-	/// Construct a color from 3 individual floats
-	/// </summary>
-	/// <param name="_r">Red component</param>
-	/// <param name="_g">Green component</param>
-	/// <param name="_b">Blue component</param>
-	Color(float _r, float _g, float _b) :r(_r), g(_g), b(_b) {}
-	/// <summary>
-	/// Create a Shade of our color by dividing each component equally
-	/// </summary>
-	/// <param name="i">Integer to divide our color by</param>
-	/// <returns>Shade of color</returns>
-	Color operator/(int i) { return Color(r / i, g / i, b / i); }
-};
-
 unsigned int FPS;
-//const int grid[WIDTH][HEIGHT];
+//const int grid[COLUMNS][ROWS];
 
 void display(void);
 void changeSize(int w, int h);
