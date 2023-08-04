@@ -17,6 +17,7 @@ void specialKeys(int key, int x, int y);
 
 Grid myGrid(COLUMNS, ROWS);
 Snake mySnake(Vector2i(COLUMNS / 4, ROWS / 2), 4);
+Snake::MoveDir latestDir;
 
 int main(int argc, char **argv)
 {
@@ -61,6 +62,7 @@ void display(void)
 		drawLine(Vector2i(0, y), Vector2i(COLUMNS, y), 2, Color(WHITE) / 10);
 	}
 
+	mySnake.setDir(mySnake.processDir(latestDir));
 	mySnake.move(myGrid);
 	mySnake.draw();
 
@@ -93,23 +95,22 @@ void timer(int value)
 
 void specialKeys(int key, int x, int y)
 {
-	Snake::MoveDir newDir;
 
 	switch (key)
 	{
 	case (GLUT_KEY_UP):
-		newDir = Snake::UP;
+		latestDir = Snake::UP;
 		break;
 	case (GLUT_KEY_DOWN):
-		newDir = Snake::DOWN;
+		latestDir = Snake::DOWN;
 		break;
 	case (GLUT_KEY_LEFT):
-		newDir = Snake::LEFT;
+		latestDir = Snake::LEFT;
 		break;
 	case (GLUT_KEY_RIGHT):
-		newDir = Snake::RIGHT;
+		latestDir = Snake::RIGHT;
 		break;
 	}
 
-	mySnake.setDir(mySnake.processDir(newDir));
+	// mySnake.setDir(mySnake.processDir(latestDir));
 }
