@@ -16,6 +16,7 @@ struct Vector2i
 {
 	int x, y;
 	Vector2i(int _x, int _y) : x(_x), y(_y) {}
+	Vector2i(int _i) : x(_i), y(_i) {}
 	// Vector2i operator()(int _x, int _y) { return Vector2i(_x, _y); }
 	Vector2i operator+(Vector2i _v) { return Vector2i(x + _v.x, y + _v.y); }
 	Vector2i operator-(Vector2i _v) { return Vector2i(x - _v.x, y - _v.y); }
@@ -57,6 +58,7 @@ struct Cell
 	Cell(int _x, int _y, Color _c) : Cell(Vector2i(_x, _y), _c) {}
 	Cell(Vector2i _v) : Cell(_v, Color(WHITE)) {}
 	Cell(int _x, int _y) : Cell(Vector2i(_x, _y)) {}
+	~Cell() {}
 	// Cell operator+(Vector2i _v) { return Cell(pos + _v, col); }
 };
 

@@ -13,11 +13,17 @@ unsigned int FPS;
 void display(void);
 void changeSize(int w, int h);
 void timer(int value);
+void keys(unsigned char key, int x, int y);
 void specialKeys(int key, int x, int y);
+void reset();
+
+bool isAlive = true;
+Vector2i snakeStartPos = Vector2i(COLUMNS / 4, ROWS / 2);
+int snakeStartLength = 4;
 
 Grid myGrid(COLUMNS, ROWS);
-Snake mySnake(Vector2i(COLUMNS / 4, ROWS / 2), 4);
-Snake::MoveDir latestDir;
+Snake mySnake(snakeStartPos, snakeStartLength);
+Snake::MoveDir latestDir = Snake::MoveDir::RIGHT;
 
 int main(int argc, char **argv)
 {
@@ -39,6 +45,7 @@ int main(int argc, char **argv)
 	glutDisplayFunc(display);
 	glutTimerFunc(0, timer, 0);
 
+	glutKeyboardFunc(keys);
 	glutSpecialFunc(specialKeys);
 
 	// enter GLUT event processing loop
@@ -63,7 +70,15 @@ void display(void)
 	}
 
 	mySnake.setDir(mySnake.processDir(latestDir));
-	mySnake.move(myGrid);
+	isAlive = mySnake.move(myGrid);
+	if (!isAlive)
+	{
+		// GAME OVER
+		std::cout << "YEEEEOWCH!" << std::endl;
+		std::cout << "Press any key to reset ..." << std::endl;
+	}
+
+	myGrid.drawFood();
 	mySnake.draw();
 
 	glutSwapBuffers();
@@ -93,24 +108,45 @@ void timer(int value)
 	glutTimerFunc(256, timer, 0);
 }
 
+void keys(unsigned char key, int x, int y)
+{
+	if (isAlive)
+		return;
+	reset();
+}
+
 void specialKeys(int key, int x, int y)
 {
-
-	switch (key)
+	if (isAlive)
 	{
-	case (GLUT_KEY_UP):
-		latestDir = Snake::UP;
-		break;
-	case (GLUT_KEY_DOWN):
-		latestDir = Snake::DOWN;
-		break;
-	case (GLUT_KEY_LEFT):
-		latestDir = Snake::LEFT;
-		break;
-	case (GLUT_KEY_RIGHT):
-		latestDir = Snake::RIGHT;
-		break;
+		switch (key)
+		{
+		case (GLUT_KEY_UP):
+			latestDir = Snake::UP;
+			break;
+		case (GLUT_KEY_DOWN):
+			latestDir = Snake::DOWN;
+			break;
+		case (GLUT_KEY_LEFT):
+			latestDir = Snake::LEFT;
+			break;
+		case (GLUT_KEY_RIGHT):
+			latestDir = Snake::RIGHT;
+			break;
+		}
+		return;
 	}
+	reset();
+}
 
-	// mySnake.setDir(mySnake.processDir(latestDir));
+void reset()
+{
+	if (isAlive)
+		return;
+
+	isAlive = true;
+	mySnake.setPos(snakeStartPos, Snake::MoveDir::RIGHT);
+	mySnake.setLength(snakeStartLength);
+	myGrid.resetFood();
+	latestDir = Snake::MoveDir::RIGHT;
 }

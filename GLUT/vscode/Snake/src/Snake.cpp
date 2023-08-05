@@ -3,11 +3,7 @@
 
 Snake::Snake(Vector2i _v, int _length) : length(_length), dir(RIGHT)
 {
-	body[0] = Cell(_v);
-	for (int i = 1; i < length; i++)
-	{
-		body[i] = Cell(body[i - 1].pos - dirToVector(dir));
-	}
+	setPos(_v, dir);
 }
 
 Cell Snake::getCell(int i) const
@@ -18,7 +14,7 @@ Cell Snake::getCell(int i) const
 		return Cell();
 }
 
-bool Snake::move(const Grid &grid)
+bool Snake::move(Grid &grid)
 {
 	// Vector2i moveDir = dirToVector(dir);
 
@@ -56,6 +52,8 @@ bool Snake::move(const Grid &grid)
 		length++;
 		body[length - 1].col = WHITE;
 		shouldGrow = false;
+		grid.setFoodPos(Vector2i(std::rand() % (grid.getSize().x - 1),
+								 std::rand() % (grid.getSize().y - 1)));
 	}
 	for (int i = length - 1; i > 0; i--)
 	{
@@ -69,7 +67,7 @@ bool Snake::move(const Grid &grid)
 	return true;
 }
 
-void Snake::draw()
+void Snake::draw() const
 {
 	for (int i = 0; i < length; i++)
 	{
@@ -102,5 +100,44 @@ Vector2i Snake::dirToVector(MoveDir _dir)
 		return Vector2i(-1, 0);
 	case RIGHT:
 		return Vector2i(1, 0);
+	}
+
+	// return Vector2i(0);
+}
+
+void Snake::setLength(int newLength)
+{
+	if (newLength == length)
+		return;
+	else if (newLength < length)
+	{
+		// if we are shortening snake
+		for (int i = length - 1; i > newLength; i--)
+		{
+			// init out-of-range cells
+			body[i] = Cell();
+		}
+	}
+	else
+	{
+		// if we are lengthening snake
+		// get direction of snake tail
+		Vector2i relativeDir = body[length - 2].pos - body[length - 1].pos;
+		for (int i = length; i < newLength; i++)
+		{
+			// add cells in relative direction
+			body[i] = Cell(body[i - 1].pos + relativeDir);
+		}
+	}
+
+	length = newLength;
+}
+
+void Snake::setPos(Vector2i headPos, MoveDir newDir)
+{
+	body[0] = Cell(headPos);
+	for (int i = 1; i < length; i++)
+	{
+		body[i] = Cell(body[i - 1].pos - dirToVector(newDir));
 	}
 }
